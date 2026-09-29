@@ -1,0 +1,275 @@
+﻿=== SISTEM MANAJEMEN BANK SAMPAH ===
+P6 - Polymorphism, Method Overriding, Method Overloading, dan Dynamic Binding
+Refactoring project P5, bukan project baru.
+
+=========== BAGIAN A - AUDIT BEHAVIOR (HASIL P5) ===========
+
+Hierarchy P5 : Entitas (superclass) <- Nasabah, BankSampah (subclass)
+Class yang diaudit : Entitas, Nasabah, BankSampah, Rekening, Sampah, Setoran
+
+Temuan : behavior getPeran(), tampilkanPeran(), dan hitungKontribusi()
+dipunya superclass, tetapi setiap subclass memberi implementasi berbeda.
+
+Superclass | Subclass   | Method             | Implementasi pada Subclass
+-----------+------------+---------------------+-----------------------------------------------
+Entitas    | Nasabah    | getPeran()         | "Nasabah"
+Entitas    | Nasabah    | tampilkanPeran()   | identitas + id nasabah + no rekening
+Entitas    | Nasabah    | hitungKontribusi() | saldo rekening nasabah
+Entitas    | BankSampah | getPeran()         | "Bank Sampah"
+Entitas    | BankSampah | tampilkanPeran()   | identitas + nomor izin + jumlah sampah
+Entitas    | BankSampah | hitungKontribusi() | total nilai sampah yang ditampung
+Entitas    | Koperasi   | getPeran()         | "Koperasi"
+Entitas    | Koperasi   | tampilkanPeran()   | identitas + kode + modal per anggota
+Entitas    | Koperasi   | hitungKontribusi() | total modal koperasi
+
+Subclass baru di P6 : Koperasi, agar polymorphic collection punya 3 tipe.
+
+=========== BAGIAN B - METHOD OVERRIDING ===========
+
+Subclass overriding memakai annotation @Override dan memanggil super.
+
+[P6.1] Object bertipe Nasabah memanggil method milik Nasabah:
+Peran            : Nasabah
+Nama             : Budi
+Alamat           : Jl. Raya Sumenep 10
+Nilai Kontribusi : Rp10.000
+ID Nasabah       : NS-001
+No Rekening      : R-NS-001
+
+[P6.2] Object bertipe BankSampah memanggil method milik BankSampah:
+Peran            : Bank Sampah
+Nama             : Bank Sampah PENS
+Alamat           : PENS Kampus Sumenep
+Nilai Kontribusi : Rp19.500
+Nomor Izin       : IZN-2026-001
+Jumlah Sampah    : 3 jenis (19.500 poin/kg)
+
+[P6.3] Object bertipe Koperasi memanggil method milik Koperasi:
+Peran            : Koperasi
+Nama             : Koperasi Sampah Sumenep
+Alamat           : Jl. Trunojoyo 3
+Nilai Kontribusi : Rp75.000.000
+Kode Koperasi    : KOP-01
+Jumlah Anggota   : 45
+Modal per Anggota: Rp1.666.667
+
+[P6.4] getPeran() di-override oleh 3 subclass:
+  nas.getPeran()  = Nasabah
+  bank.getPeran() = Bank Sampah
+  kop.getPeran()  = Koperasi
+
+[P6.5] hitungKontribusi() di-override oleh 3 subclass:
+  nas.hitungKontribusi()  = Rp10.000
+  bank.hitungKontribusi() = Rp19.500
+  kop.hitungKontribusi()  = Rp75.000.000
+
+=========== BAGIAN C - METHOD OVERLOADING ===========
+
+Alasan penggunaan : satu nama method melayani kebutuhan berbeda, sehingga
+                   pemanggil tidak perlu menghafal banyak nama method.
+
+[P6.6] BankSampah.cariSampah() di-overload 3 kali:
+  cariSampah("SP-002")        -> Koran Bekas
+  cariSampah("Logam", 10000.0) -> 1 data: SP-003 Kaleng Bekas
+  cariSampah(5000.0)           -> 2 data: SP-001 Botol Plastik PET, SP-002 Koran Bekas
+  Alasan: kode sampah unik, sedangkan jenis dan batas harga dapat cocok
+          dengan banyak data sekaligus.
+
+[P6.7] Rekening.tambahSaldo() di-overload 2 kali:
+  tambahSaldo(2500.0) tanpa keterangan:
+  tambahSaldo(7500.0, "Setoran Sampah Logam") dengan keterangan:
+Setoran Rp7.500 (Setoran Sampah Logam) masuk ke rekening R-NS-001
+  Alasan: variant berketerangan dipakai saat setoran perlu dicatat
+          sumbernya pada laporan.
+
+[P6.8] Koperasi.tambahAnggota() di-overload 2 kali:
+  jumlah anggota sebelum : 45
+  tambahAnggota()       -> 46 anggota
+  tambahAnggota(3)      -> 49 anggota
+  Alasan: pendaftaran perorangan memakai tanpa parameter, sedangkan
+          pendaftaran massal memakai jumlah sekaligus.
+
+[P6.9] KatalogEntitas.cari() di-overload 3 kali pada collection polimorfik:
+  cari("Budi")            -> Budi (Nasabah)
+  cari(10000.0)          -> 3 entitas: Budi, Bank Sampah PENS, Koperasi Sampah Sumenep
+  cari("Nasabah", 1000.0)   -> 1 entitas: Budi
+  Alasan: kunci pencarian dapat berupa nama, ambang nilai kontribusi,
+          atau kombinasi keduanya.
+
+=========== BAGIAN D - UPCASTING & POLYMORPHIC REFERENCE ===========
+
+[P6.10] Upcasting eksplisit dari reference subclass ke superclass:
+  tipe reference awal    : Nasabah
+  tipe reference akhir   : Entitas
+  tipe object sebenarnya: Nasabah
+  nama tetap terbaca    : Budi
+  peran yang berjalan   : Nasabah
+
+[P6.11] Upcasting langsung pada deklarasi (bentuk ringkas):
+  tipe reference : Entitas, Entitas, Entitas
+  tipe object    : Nasabah, BankSampah, Koperasi
+  nama            : Dewi, BS Mitra, Koperasi Bakti
+  peran           : Nasabah, Bank Sampah, Koperasi
+
+[P6.12] Polymorphic reference: reference superclass, object subclass:
+  bank.getClass() = BankSampah -> peran Bank Sampah
+  kop.getClass()  = Koperasi -> peran Koperasi
+  Superclass Entitas hanya membutuhkan method getPeran() yang di-override,
+  sehingga reference superclass tetap memancing behavior spesifik subclass.
+
+=========== BAGIAN E - POLYMORPHIC COLLECTION ===========
+
+[P6.13] Polymorphic collection berbentuk array (5 object, 3 tipe subclass):
+  tipe array : Entitas[]
+  jumlah     : 5
+
+Peran            : Nasabah
+Nama             : Budi
+Alamat           : Jl. Raya Sumenep 10
+Nilai Kontribusi : Rp20.000
+ID Nasabah       : NS-001
+No Rekening      : R-NS-001
+
+Peran            : Nasabah
+Nama             : Ani
+Alamat           : Jl. Melati 5
+Nilai Kontribusi : Rp0
+ID Nasabah       : NS-002
+No Rekening      : R-NS-002
+
+Peran            : Nasabah
+Nama             : Citra
+Alamat           : Jl. Anggrek 7
+Nilai Kontribusi : Rp7.500
+ID Nasabah       : NS-003
+No Rekening      : R-NS-003
+
+Peran            : Bank Sampah
+Nama             : Bank Sampah PENS
+Alamat           : PENS Kampus Sumenep
+Nilai Kontribusi : Rp19.500
+Nomor Izin       : IZN-2026-001
+Jumlah Sampah    : 3 jenis (19.500 poin/kg)
+
+Peran            : Koperasi
+Nama             : Koperasi Sampah Sumenep
+Alamat           : Jl. Trunojoyo 3
+Nilai Kontribusi : Rp75.000.000
+Kode Koperasi    : KOP-01
+Jumlah Anggota   : 49
+Modal per Anggota: Rp1.530.612
+
+[P6.14] Satu loop, tiga behavior berbeda, tanpa if-else per tipe:
+  total kontribusi seluruh entitas : Rp75.047.000
+
+[P6.15] Polymorphic collection berbentuk List<Entitas>:
+  jumlah entitas  : 5
+  tipe per elemen : Entitas, tetapi objek aktual beragam
+
+[P6.16] Iterasi List<Entitas> dengan pemanggilan method polymorphic:
+Peran            : Nasabah
+Nama             : Budi
+Alamat           : Jl. Raya Sumenep 10
+Nilai Kontribusi : Rp20.000
+ID Nasabah       : NS-001
+No Rekening      : R-NS-001
+
+Peran            : Nasabah
+Nama             : Ani
+Alamat           : Jl. Melati 5
+Nilai Kontribusi : Rp0
+ID Nasabah       : NS-002
+No Rekening      : R-NS-002
+
+Peran            : Nasabah
+Nama             : Citra
+Alamat           : Jl. Anggrek 7
+Nilai Kontribusi : Rp7.500
+ID Nasabah       : NS-003
+No Rekening      : R-NS-003
+
+Peran            : Bank Sampah
+Nama             : Bank Sampah PENS
+Alamat           : PENS Kampus Sumenep
+Nilai Kontribusi : Rp19.500
+Nomor Izin       : IZN-2026-001
+Jumlah Sampah    : 3 jenis (19.500 poin/kg)
+
+Peran            : Koperasi
+Nama             : Koperasi Sampah Sumenep
+Alamat           : Jl. Trunojoyo 3
+Nilai Kontribusi : Rp75.000.000
+Kode Koperasi    : KOP-01
+Jumlah Anggota   : 49
+Modal per Anggota: Rp1.530.612
+
+[P6.17] Penyaringan collection tetap polymorphic:
+  cari("Nasabah", 0.0) mengembalikan 3 entitas:
+    - Budi | peran=Nasabah | kontribusi=Rp20.000
+    - Ani | peran=Nasabah | kontribusi=Rp0
+    - Citra | peran=Nasabah | kontribusi=Rp7.500
+
+=========== BAGIAN F - PENGUJIAN DYNAMIC BINDING ===========
+
+Setiap reference bertipe Entitas, tetapi method yang dieksekusi berbeda.
+
+No | Tipe Reference | Tipe Object   | Method          | getPeran()  | hitungKontribusi()
+---+----------------+---------------+-----------------+-------------+------------------
+1  | Entitas        | Nasabah       | tampilkanPeran() | Nasabah     | Rp20.000
+2  | Entitas        | BankSampah    | tampilkanPeran() | Bank Sampah | Rp19.500
+3  | Entitas        | Koperasi      | tampilkanPeran() | Koperasi    | Rp75.000.000
+
+Pembuktian:
+  nas.getClass()   = Nasabah
+  bank.getClass()  = BankSampah
+  kop.getClass()   = Koperasi
+  Ketiganya dipanggil melalui method yang sama pada reference bertipe
+  Entitas, tetapi tiga implementasi berbeda yang dieksekusi.
+
+Mengapa method yang dijalankan berbeda walaupun reference bertipe sama?
+  1. Reference hanya menyimpan tipe statis (Entitas) dan alamat object di memory.
+  2. Saat runtime, JVM membaca tipe aktual object pada object header, yaitu
+     Nasabah, BankSampah, atau Koperasi.
+  3. JVM mencari method dengan nama, parameter, dan return type yang cocok pada
+     tipe aktual tersebut, bukan pada tipe reference.
+  4. Karena setiap subclass meng-override method, implementasi yang dipanggil
+     adalah milik subclass. Proses ini disebut Dynamic Binding atau
+     Dynamic Method Dispatch, dan terjadi saat runtime.
+
+Konsekuensi : menambah subclass baru di P7 tidak mengubah loop pada
+collection, cukup menambah satu class baru.
+
+=========== REGRESI P4 & P5 ===========
+
+[Regresi] Composition Nasabah-Rekening :
+No Rekening : R-NS-001
+Saldo       : Rp20.000
+
+[Regresi] Aggregation BankSampah-Sampah :
+Nama Bank Sampah     : Bank Sampah PENS
+Alamat               : PENS Kampus Sumenep
+Nomor Izin           : IZN-2026-001
+Jumlah Sampah Ditampung : 3
+  - SP-001 | Botol Plastik PET | Anorganik | Rp5.000
+  - SP-002 | Koran Bekas | Kertas | Rp2.500
+  - SP-003 | Kaleng Bekas | Logam | Rp12.000
+
+[Regresi] Association Setoran-Nasabah-Sampah :
+Setoran ST-001 diproses. Saldo Budi bertambah Rp15.000
+Setoran ST-002 diproses. Saldo Ani bertambah Rp12.500
+
+[Regresi] Fungsi pencarian P4 masih bekerja :
+  bank.cariSampah("SP-002").getNama() = Koran Bekas
+  s1.getNasabah().getNama()              = Budi
+  inheritance P5 getNama/getAlamat      = Budi / PENS Kampus Sumenep
+
+=========== KESIMPULAN ===========
+
+Bagian A : 3 behavior Entitas di-override dengan implementasi berbeda.
+Bagian B : 3 subclass melakukan overriding dengan annotation @Override.
+Bagian C : overloading pada BankSampah, Rekening, Koperasi, KatalogEntitas.
+Bagian D : upcasting dari Nasabah, BankSampah, dan Koperasi ke Entitas.
+Bagian E : polymorphic collection array dan List dengan 5 object, 3 tipe.
+Bagian F : dynamic binding terbukti pada 3 reference bertipe Entitas.
+Regresi  : seluruh fungsi P4 dan P5 masih berjalan.
+
