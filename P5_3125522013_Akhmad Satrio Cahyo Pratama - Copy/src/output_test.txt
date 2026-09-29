@@ -1,0 +1,73 @@
+﻿=== SISTEM MANAJEMEN BANK SAMPAH ===
+P5 - Refactoring dengan Inheritance, Generalization, Superclass, dan Subclass
+
+=========== P5 - PEMBUATAN OBJECT SUBCLASS ===========
+
+[P5.1] Object dibuat dari subclass Nasabah (is-a Entitas).
+ID          : NS-001
+Nama        : Budi
+Alamat      : Jl. Raya Sumenep 10
+No Rekening : R-NS-001
+Saldo       : Rp0.0
+
+ID          : NS-002
+Nama        : Ani
+Alamat      : Jl. Melati 5
+No Rekening : R-NS-002
+Saldo       : Rp0.0
+
+[P5.2] Object dibuat dari subclass BankSampah (is-a Entitas).
+Nama Bank Sampah     : Bank Sampah PENS
+Alamat               : PENS Kampus Sumenep
+Jumlah Sampah Ditampung : 0
+
+=========== P5 - AKSES MEMBER SUPERCLASS DARI SUBCLASS ===========
+
+[P5.3] Subclass memanggil method superclass (getNama/getAlamat):
+  nasabah1.getNama()       : Budi
+  nasabah1.getAlamat()     : Jl. Raya Sumenep 10
+  bank.getNama()           : Bank Sampah PENS
+  bank.getAlamat()         : PENS Kampus Sumenep
+
+[P5.4] Validasi superclass diakses dari subclass:
+Nama tidak valid
+  Nama nasabah1 tetap = Budi
+Alamat tidak valid
+  Alamat bank tetap = PENS Kampus Sumenep
+
+=========== P5 - POLYMORPHISM (REFERENSI SUPERCLASS) ===========
+
+[P5.5] Referensi bertipe superclass menunjuk ke object subclass:
+  entitas1 (Nasabah) : Citra - Jl. Anggrek 7
+  entitas2 (BankSampah) : BS Mitra - Jl. Cempaka 2
+
+=========== REGRESI P4 : FUNGSIONALITAS TETAP BERJALAN ===========
+
+Nama Bank Sampah     : Bank Sampah PENS
+Alamat               : PENS Kampus Sumenep
+Jumlah Sampah Ditampung : 2
+  - SP-001 | Botol Plastik Pet | Anorganik | Rp5000.0
+  - SP-002 | Koran Bekas | Kertas | Rp2500.0
+
+Setoran ST-001 diproses. Saldo Budi bertambah Rp15000.0
+Setoran ST-002 diproses. Saldo Ani bertambah Rp12500.0
+
+[Regresi] cariSampah("SP-002") : Koran Bekas
+[Regresi] Setoran memanggil nasabah.getNama() : Budi
+[Regresi] Composition - Rekening masih dibuat di dalam Nasabah:
+No Rekening : R-NS-001
+Saldo       : Rp15000.0
+
+=========== HASIL AKHIR ===========
+
+ID          : NS-001
+Nama        : Budi
+Alamat      : Jl. Raya Sumenep 10
+No Rekening : R-NS-001
+Saldo       : Rp15000.0
+
+ID          : NS-002
+Nama        : Ani
+Alamat      : Jl. Melati 5
+No Rekening : R-NS-002
+Saldo       : Rp12500.0
