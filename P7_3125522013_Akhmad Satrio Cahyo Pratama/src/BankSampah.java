@@ -124,4 +124,11 @@ public class BankSampah extends Entitas implements DapatDilacak {
     public String getStatusOperasional() {
         return "Buka / Menerima Setoran Sampah (Izin: " + nomorIzin + ")";
     }
+
+    @Override
+    public void perbaruiLokasi(String lokasiBaru) {
+        if (lokasiBaru != null && !lokasiBaru.isBlank()) {
+            this.koordinatLokasi = lokasiBaru;
+        }
+    }
 }

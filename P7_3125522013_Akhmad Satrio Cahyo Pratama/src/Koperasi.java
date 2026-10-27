@@ -111,4 +111,11 @@ public class Koperasi extends Entitas implements DapatDilacak {
     public String getStatusOperasional() {
         return "Aktif / Melayani Permodalan Daur Ulang (" + jumlahAnggota + " Anggota)";
     }
+
+    @Override
+    public void perbaruiLokasi(String lokasiBaru) {
+        if (lokasiBaru != null && !lokasiBaru.isBlank()) {
+            this.lokasiKantor = lokasiBaru;
+        }
+    }
 }

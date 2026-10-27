@@ -14,4 +14,9 @@ public interface DapatDilacak {
      * @return String status
      */
     String getStatusOperasional();
+
+    /**
+     * Memperbarui lokasi entitas.
+     */
+    default void perbaruiLokasi(String lokasiBaru) {}
 }

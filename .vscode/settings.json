@@ -1,0 +1,33 @@
+{
+    "java.project.resourceFilters": [
+        "node_modules",
+        "\\.git",
+        "P1_.*",
+        "P2_.*",
+        "P3_.*",
+        "P4_.*",
+        "P5_.*",
+        "P6_.*",
+        "P7_.*",
+        "UTS"
+    ],
+    "java.diagnostic.filter": [
+        "**/P1_*/**",
+        "**/P2_*/**",
+        "**/P3_*/**",
+        "**/P4_*/**",
+        "**/P5_*/**",
+        "**/P6_*/**",
+        "**/P7_*/**",
+        "**/UTS/**"
+    ],
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/*.class": true
+    }
+}
